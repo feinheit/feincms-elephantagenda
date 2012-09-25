@@ -19,3 +19,13 @@ if you just want to display a simple eventlist, use the content.
 
 To use the Facebook backend, simply add ``elephantagenda.backends.fb_agenda``  to your
 ``settings.INSTALLED_APPS`` instead.
+
+
+Requirements
+============
+
+ * https://github.com/feinheit/django-facebook-graph for ``fb_agenda``
+
+ * https://github.com/sbaechler/django_gmapsfield for ``gmaps_agenda``
+
+ * ``django-countries` for agenda and ``gmaps_agenda``

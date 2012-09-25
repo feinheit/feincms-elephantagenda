@@ -1,4 +1,4 @@
-{% load feinheit_thumbnail feinheit_base tools i18n %}
+{% load feinheit_thumbnail tools i18n %}
 <div class="hidden" id="fb-event-login">
     <p>{% blocktrans %}Log dich bei Facebook ein, 
     	damit du deinen Freunden mitteilen kannst, 
@@ -8,7 +8,7 @@
 </div>
 {% for object in object_list %}
 <div class="append-bottom">
-    <a class="ausklapp h2" href="#{{ object.slug }}" id="a-{{ object.slug }}" name="{{ object.name }}" {% context_menu object %}>
+    <a class="ausklapp h2" href="#{{ object.slug }}" id="a-{{ object.slug }}" name="{{ object.name }}">
     	
     	<span class="event-date">{{ object.start_time|date:"SHORT_DATE_FORMAT" }}</span>
         <br />

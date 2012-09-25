@@ -1,9 +1,7 @@
 from django.conf.urls.defaults import *
 
-from feinheit.agenda.models import Event
-
 from api import events
-
+from .models import Event
 
 urlpatterns = patterns('',
     url(r'^$', 'django.views.generic.list_detail.object_list', {

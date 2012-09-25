@@ -1,27 +1,10 @@
 #coding=utf-8
-from django import forms
 from django.contrib import admin
-from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
 
 from models import Event, Category
-from django.conf import settings
 
 from facebook.admin import AdminBase
 from facebook.utils import get_graph, get_public_graph, get_static_graph
-
-""" Add fh-admin Facebook app to your server secrets.py if the admin frontend is hosted on Lemur.
-
-    'fh-admin' : {
-        'ID': '230650940299284',
-        'API-KEY': '',
-        'SECRET': 'da928133383970e1159546c99cb8d464',
-        'CANVAS-PAGE': 'https://apps.facebook.com/fh-admin/',
-        'CANVAS-URL': 'http://feinheit.ch',
-        'SECURE-CANVAS-URL': 'https://feinheit.ch',
-        'REDIRECT-URL': 'http://apps.facebook.com/fh-admin/',
-    }
-"""
 
 
 class EventAdmin(AdminBase):

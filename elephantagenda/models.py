@@ -7,7 +7,7 @@ except ImportError:
 
 """ Add the backend to settings.INSTALLED_APPS """
 
-backend_models =  getattr(settings, 'AGENDA_BACKEND', 'feinheit.newagenda.backends.agenda')
+backend_models =  getattr(settings, 'AGENDA_BACKEND', 'elephantagenda.backends.agenda')
 
 exec 'from %s.models import *' % backend_models
 
