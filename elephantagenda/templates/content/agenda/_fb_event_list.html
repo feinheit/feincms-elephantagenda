@@ -1,0 +1,136 @@
+{% load feinheit_thumbnail feinheit_base tools i18n %}
+<div class="hidden" id="fb-event-login">
+    <p>{% blocktrans %}Log dich bei Facebook ein, 
+    	damit du deinen Freunden mitteilen kannst, 
+    	ob du an einer Veranstaltung teil nimmst:
+    	{% endblocktrans %} &nbsp;
+   <fb:login-button show-faces="false" width="200" max-rows="0" perms="rsvp_event, user_events"></fb:login-button></p>
+</div>
+{% for object in object_list %}
+<div class="append-bottom">
+    <a class="ausklapp h2" href="#{{ object.slug }}" id="a-{{ object.slug }}" name="{{ object.name }}" {% context_menu object %}>
+    	
+    	<span class="event-date">{{ object.start_time|date:"SHORT_DATE_FORMAT" }}</span>
+        <br />
+    	<span class="event-title">{{ object.name }}</span>
+        <br />
+        <span class="byline">{{ object.location }}{% if object.venue.city %}, {{ object.venue.city }}{% endif %}</span>
+    </a>
+    <div class="ausklapp_content event clearfix" {% context_menu object %}>
+        <div class="event-image left">
+            <a href="{{ object.facebook_link }}" class="rotation-{% random 6 %}" target="_blank"><img src="{{ object.picture }}" class="event-image-image framed" alt="" /></a>
+        </div>
+        <div class="event-text left">
+            <p>{{ object.description|safe }}</p>
+            {% if object.privacy == 'OPEN' %}
+            <div class="fb-event-rsvp hidden" id="rsvp-{{ object.id }}" data-id="{{ object.id }}">
+	            <button class="fb-button slide attending" rel="attending"><span class="slide">{% trans "I'm attending" %}</span></button>
+	            <button class="fb-button slide unsure" rel="maybe"><span class="slide">{% trans 'Maybe' %}</span></button>
+	            <button class="fb-button slide declined" rel="declined"><span class="slide">{% trans 'No' %}</span></button>
+		    </div>
+            <p><a href="{{ object.facebook_link }}" target="_blank">Zum Event auf Facebook</a></p>
+            {% else %}
+            <div class="rsvp locale">
+                <p>{% trans 'Für diesen Event musst du dich anmelden' %}.</p>
+                
+            </div>
+            {% endif %}
+        </div>          
+    </div>
+</div>
+{% endfor %}
+
+<script>
+function show_rsvp(evt_ids){
+	$('.fb-event-rsvp').each(function(){
+		var e_id = $(this).data('id');
+		if($.inArray(e_id, evt_ids) != -1) {
+			var evt = fb.events[e_id];
+			//log('Event ' + e_id + 'hat Reservierung: ' + evt['rsvp_status']);
+			$('#rsvp-'+ e_id +' .fb-button.'+ evt['rsvp_status']).addClass('selected');
+		}
+	})
+}
+
+function user_events(){
+	FB.api('/me/events', function(response) {
+		if(response && response.data) {
+			//log(response.data);
+			fb['events'] = {};
+			evt_ids = []
+			for (var i in response.data) {
+				evt_ids.push(parseInt(response.data[i]['id'],10));
+				fb.events[response.data[i]['id']] = response.data[i];
+			}
+			show_rsvp(evt_ids);
+		}
+	});
+}
+FQ.add(function(){
+	FB.Event.subscribe('auth.sessionChange', function(response) {
+	  log('event sessionChange: ');
+	});
+	user_events();
+});
+SQ.add(function(){
+    $('a.ausklapp').click(function() {
+        $(this).children('span').toggleClass('open').end().next().slideToggle(500, 
+            function(){
+                $.scrollTo($(this), 500, {'offset':{'top': -160}});
+            });
+        return false;
+    }).next().hide();
+    $('a.ausklapp:first').children('span').toggleClass('open').end().next().slideDown();
+        //thaths the hash-shizzle
+    if ( window.location.hash != '') {
+        var hash=window.location.hash.substr(1)
+    	//get hash, scroll to position
+        $('#a'+hash).children('span').addClass('open');
+        $('#a'+hash).next().slideDown(500,function(){
+            $.scrollTo($(this), 500);
+            });
+    }
+    
+    {% if object.meta.uses_medialibrary %}
+    $('.event-image').fancybox();
+    {% endif %}
+    
+    function login(button){
+        FB.login(function(response) {
+          if (response.session) {
+            if (response.perms) {
+              fb.user = response.session;
+              //log(response);
+              save_perms(response, 'string');
+              button.trigger('click');
+              // perms is a comma separated list of granted permissions
+            } 
+          } 
+        }, {perms:'rsvp_event, user_events'});
+    }
+
+    $('.fb-event-rsvp button').click(function(evt){
+       var event_id = $(this).parent('div').data('id');
+       var button = $(this);
+       var status = $(this).attr('rel');
+       if (typeof fb.perms.extended !== 'undefined' && fb.perms.extended !== false && 
+            	$.inArray('rsvp_event', fb.perms.extended)!= -1) { 
+           $('.fb-button').removeClass('selected');
+           FB.api('/'+ event_id + '/' + status, 'post', function(response) {
+           if (!response || response.error) {
+                alert('Error occured');
+                log(response);
+              } else {
+                button.addClass('selected');
+                var track = ['_trackEvent', 'Events', event_id, status ];
+                _gaq.push(track);
+              }
+           });
+       } else {
+           login(button);
+       }
+
+    });
+
+});
+</script>

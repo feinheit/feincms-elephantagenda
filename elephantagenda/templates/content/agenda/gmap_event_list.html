@@ -1,0 +1,75 @@
+{% load feinheit_base feinheit_thumbnail i18n gmap %}
+<section class="row">
+{% for object in object_list %}
+{% with venue=object.venue %}
+<div class="append-bottom span9" id="event-{{ forloop.counter }}">
+    <h2><a class="ausklapp{% if forloop.first %} open{% endif %}" href="#{{ object.slug }}" id="a-{{ object.slug }}" name="a{{ object.name }}"><small>{{ object.start_time|date:"l, j. F, G:i" }}</small><br>{{ object.name }}</a></h2>
+    <div class="ausklapp_content row{% if not forloop.first %} hidden{% endif %}{% if object.picture %} withpicture{% endif %}" id="ausklapp{{ forloop.counter }}">
+        <div class="event-text span6">
+            {{ object.description|safe }}
+            <div class="venue">
+                <h3>{% trans 'Treffpunkt' %}: <a class="venue-link" href="#map_for-{{ forloop.counter }}">{% if venue.map %}<i class="icon-map-marker"></i> {% endif %}{{ venue.name }}</a></h3>
+                <p>
+                {% if venue.street %}{{ venue.street }}<br>{% endif %}
+                {% if venue.city %}{{ venue.city }}<br>{% endif %}
+                </p>
+            </div>
+        </div>
+        {% if object.picture %}
+        <div class="event-image span3">
+           {% if object.meta.uses_medialibrary %}
+           <a href="{{ object.picture.file.name|thumbnail:'600x600' }}" class="event-image image">
+            <img src="{{ object.picture.file.name|thumbnail:'270x200' }}" alt="" />
+           </a>
+           {% else %}
+           <a href="{{ object.get_absolute_url }}" class="event-image image">
+           <img src="{{ object.picture }}" alt="" />
+           </a>
+           {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+<div class="outside">
+  <div id="map_for-{{ forloop.counter }}">
+    {{ venue.map|show }}
+  </div>
+</div>
+<hr>
+{% endwith %}
+{% endfor %}
+</section>
+
+<script>
+SQ.add(function(){
+    $('.ausklapp_content.hidden').hide().removeClass('hidden');
+    $('a.ausklapp').click(function() {
+        $(this).toggleClass('open');
+        $(this).closest('h2').next().slideToggle(500, function(){
+            $.scrollTo($(this), 500);
+            $('a.event-image', this).fancybox();
+            });
+        window.location.hash = $(this).attr('href');
+        return false;
+    });
+        //thaths the hash-shizzle
+    if ( window.location.hash != '') {
+        var hash=window.location.hash;
+        //get hash, scroll to position
+        $('[href='+hash+']').addClass('open')
+            .closest('h2').next().slideDown(500,function(){
+                $.scrollTo($(this), 500);
+                $('a.event-image', this).fancybox();
+            });
+    }
+	$('.venue-link').fancybox();
+});
+</script>
+{% gmap_includes %}
+
+
+{% comment %}
+Aufklapp JS:
+Needs jQuery.scrollTo for scrollTo.
+
+{% endcomment %}
