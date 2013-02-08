@@ -132,7 +132,7 @@ class EventBase(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ['start_time']
+        ordering = ['-start_time']
         verbose_name = _('Event')
         verbose_name_plural = _('Events')
         #connections = ['feed', 'invited', 'attending', 'maybe', 'noreply', 'declined', 'picture']
