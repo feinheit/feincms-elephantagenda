@@ -34,11 +34,11 @@ class EventsContent(models.Model):
 
     def render(self, request, context, **kwargs):           
         if self.filter == 'u':
-            events = Event.objects.upcoming()
+            events = Event.objects.upcoming().order_by('start_time')
         elif self.filter == 'p':
-            events = Event.objects.past()
+            events = Event.objects.past().order_by('-start_time')
         else:
-            events = Event.objects.all()
+            events = Event.objects.all().order_by('start_time')
 
         if hasattr(self.parent, 'language'):
             events = events.filter(language=self.parent.language)
