@@ -13,12 +13,15 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 from feincms.templatetags.feincms_thumbnail import thumbnail
+from feincms.translations import (TranslatedObjectManager,
+                                  TranslatedObjectMixin, Translation)
 
 try:
     from django.utils import timezone
     now = timezone.now
 except ImportError:
     now = datetime.now
+
 
 @python_2_unicode_compatible
 class CategoryBase(models.Model):
@@ -45,7 +48,7 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
-class EventManager(models.Manager):
+class EventManager(TranslatedObjectManager):
 
     def get_query_set(self):
         return super(EventManager, self).get_query_set().select_related('venue')
@@ -102,7 +105,7 @@ PRIVACY_CHOICES = (('OPEN', _('open')),
 
 
 @python_2_unicode_compatible
-class EventBase(models.Model):
+class EventBase(models.Model, TranslatedObjectMixin):
 
     def __init__(self, *args, **kwargs):
         super(EventBase, self).__init__(*args, **kwargs)
@@ -154,8 +157,7 @@ class EventBase(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        # TODO: Make this work
-        return ('event_detail', (), {'id': self.id})
+        return ('event_detail', (self.slug,), {})
 
 
 class Event(EventBase):
@@ -167,12 +169,26 @@ class Event(EventBase):
         abstract = False
 
 
+class EventTranslation(Translation(Event)):
+    name = models.CharField(_('Name'), max_length=255)
+    description = models.TextField(_('Description'), blank=True)
+
+    class Meta:
+        verbose_name = _('Event Translation')
+        verbose_name_plural = _('Event Translations')
+
+
 class EventAdminForm(forms.ModelForm):
 
     class Meta:
         widgets = {
             'description': forms.widgets.Textarea(attrs={'class': 'tinymce'}),
         }
+
+
+class EventTranslationInline(admin.TabularInline):
+    model = EventTranslation
+    max_num = len(settings.LANGUAGES)
 
 
 class EventAdmin(admin.ModelAdmin):
@@ -186,20 +202,7 @@ class EventAdmin(admin.ModelAdmin):
 
     form = EventAdminForm
 
-    def _media(self):
-        try:
-            js = ('//ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js',
-                  settings.FEINCMS_RICHTEXT_INIT_CONTEXT['TINYMCE_JS_URL'],
-                  'tinymce_admin/init.js',
-                  )
-        except Exception:
-            return forms.Media()
-        return forms.Media(js=js)
-
-    media = property(_media)
-
-#    picture = forms.ModelChoiceField(queryset=MediaFile.objects.filter(type='image'),
-#                                     label=_('media file'), required=False)
+    inlines = [EventTranslationInline]
 
     save_on_top = True
     list_display = ('__str__', 'start_time', 'end_time', 'privacy',

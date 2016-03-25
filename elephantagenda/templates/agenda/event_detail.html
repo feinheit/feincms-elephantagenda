@@ -1,13 +1,13 @@
 {% load applicationcontent_tags %}
-{% fragment request "title" prepend %}{{ object.translation.title }} - {% endfragment %}
+{% fragment request "title" prepend %}{{ object.translation.name|default:object.name }} - {% endfragment %}
 
 <div class="event">
-    {% if object.image %}
-        <img src="{{ object.image.url }}" alt="" style="float:right" />
+    {% if object.picture %}
+        <img src="{{ object.picture.url }}" alt="" style="float:right" />
     {% endif %}
 
-    {{ object.date|date:"d.m.Y" }}{% if object.time %}, {{ object.time }}{% endif %}:<br />
-    <h2><a href="{{ object.get_absolute_url }}">{{ object.translation.title }}</a></h2>
+    {{ object.start_time }}{% if object.end_time %}, {{ object.end_time }}{% endif %}<br />
+    <h2><a href="{{ object.get_absolute_url }}">{{ object.translation.name|default:object.name }}</a></h2>
 
-    {{ object.translation.description }}
+    {{ object.translation.description|default:object.description|safe }}
 </div>
