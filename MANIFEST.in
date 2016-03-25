@@ -1,0 +1,6 @@
+include LICENSE
+include MANIFEST.in
+include README.rst
+recursive-include elephantagenda/static *
+recursive-include elephantagenda/locale *
+recursive-include elephantagenda/templates *

@@ -1,0 +1,9 @@
+CHANGES
+=======
+
+* adjust ordering only for future events
+* Revert "change events ordering to newest first" was a bad idea
+* change events ordering to newest first
+* remove all references to feinheit repo
+* update README
+* initial commit

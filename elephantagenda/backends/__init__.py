@@ -8,6 +8,7 @@ try:
 except ImportError:
     from django.utils.importlib import import_module
 
+
 def get_backend(path):
     """
     Return an instance of an agenda backend, given the dotted
@@ -17,12 +18,13 @@ def get_backend(path):
     exists, or because the module does not contain a class of the
     appropriate name), ``django.core.exceptions.ImproperlyConfigured``
     is raised.
-    
+
     """
     i = path.rfind('.')
-    module, attr = path[:i], path[i+1:]
+    module, attr = path[:i], path[i + 1:]
     try:
         mod = import_module(module)
     except ImportError, e:
-        raise ImproperlyConfigured('Error loading agenda backend %s: "%s"' % (module, e))
+        raise ImproperlyConfigured(
+            'Error loading agenda backend %s: "%s"' % (module, e))
     return mod
