@@ -115,6 +115,7 @@ class EventBase(models.Model, TranslatedObjectMixin):
     owner = models.ForeignKey(User, blank=True, null=True, verbose_name=_('Owner'),
                               related_name='owns_%(app_label)s_%(class)s')
     name = models.CharField(_('Name'), max_length=255)
+    short_description = models.TextField(_('Short Description'), blank=True)
     description = models.TextField(_('Description'), blank=True)
     start_time = models.DateTimeField(
         _('Start time'), help_text=_('Start Datum und Zeit'))
@@ -171,6 +172,7 @@ class Event(EventBase):
 
 class EventTranslation(Translation(Event)):
     name = models.CharField(_('Name'), max_length=255)
+    short_description = models.TextField(_('Short Description'), blank=True)
     description = models.TextField(_('Description'), blank=True)
 
     class Meta:
@@ -183,6 +185,7 @@ class EventAdminForm(forms.ModelForm):
     class Meta:
         widgets = {
             'description': forms.widgets.Textarea(attrs={'class': 'tinymce'}),
+            'short_description': forms.widgets.Textarea(attrs={'class': 'tinymce'}),
         }
 
 
