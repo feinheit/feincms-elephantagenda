@@ -1,0 +1,11 @@
+CHANGES
+=======
+
+* Finalized usable base
+* Reborn to dj 1.8, PEP8 cleanup and add PBR build. requires custom image model remove cleanse dependency, tynimce is optional
+* adjust ordering only for future events
+* Revert "change events ordering to newest first" was a bad idea
+* change events ordering to newest first
+* remove all references to feinheit repo
+* update README
+* initial commit

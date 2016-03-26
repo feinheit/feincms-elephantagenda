@@ -11,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from django.contrib import admin
 
+
 class Venue(models.Model):
     name = models.CharField(_('Location'), max_length=255)
     street = models.CharField(_('Street'), max_length=255, blank=True)
@@ -27,19 +28,21 @@ class Venue(models.Model):
     def __unicode__(self):
         return u'%s, %s, %s' % (self.name, self.street, self.city)
 
+
 class VenueAdmin(admin.ModelAdmin):
     list_display = ('name', 'street', 'city', 'country')
 
 
 class Category(CategoryBase):
+
     class Meta(CategoryBase.Meta):
         abstract = False
 
 
 class Event(EventBase):
     venue = models.ForeignKey(Venue)
-    categories = models.ManyToManyField(Category, blank=True, null=True, 
-                            related_name="%(app_label)s_%(class)s_related")
-    
+    categories = models.ManyToManyField(Category, blank=True, null=True,
+                                        related_name="%(app_label)s_%(class)s_related")
+
     class Meta(EventBase.Meta):
         abstract = False
