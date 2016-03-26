@@ -213,7 +213,8 @@ class EventAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {
             'fields': ('privacy',  'start_time',  'end_time',
-                       'name', 'slug', 'description', 'language',
+                       'name', 'slug', 'short_description',
+                       'description', 'language',
                        'picture', 'venue', 'categories')
         }),
     ]
