@@ -1,6 +1,5 @@
-from django.core import serializers
 from django.http import JsonResponse
-
+from django.forms.models import model_to_dict
 from feincms.views.decorators import standalone
 
 from .models import Event
@@ -20,5 +19,5 @@ def events(request):
         events = Event.objects.upcoming()
 
     return JsonResponse(
-        serializers.serialize('json', events, ensure_ascii=False),
+        [model_to_dict(ev) for ev in events],
         safe=False)
